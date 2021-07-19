@@ -17,12 +17,13 @@ while True:
         while f.read(1) != b'\n':
             f.seek(-2, os.SEEK_CUR)
         last_tweet_id = f.readline().decode()
+
     if str(tweet.id) + "\n" == last_tweet_id:
         print("Nothing to do")
     else:
         pyperclip.copy(slicedTweet)
         openLog = open(log, "a")
         openLog.write(str(tweet.id) + "\n")
-        openLog.close
+        openLog.close()
         print("Original Tweet: " + removeURL + "\n\n" + "Reversed: " + slicedTweet + "\n\n" + "Tweet ID: " + str(tweet.id))
     sleep(600 - time() % 600)
