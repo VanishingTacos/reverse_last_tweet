@@ -23,4 +23,5 @@ else:
     openLog = open(log, "a")
     openLog.write(str(tweet.id) + "\n")
     openLog.close()
-    api.update_status(slicedTweet, in_reply_to_status_id = tweet.id)
+    api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True)
+    print("Done")
