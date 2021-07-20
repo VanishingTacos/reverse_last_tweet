@@ -26,7 +26,6 @@ with open(log, "rb") as f:
 if str(tweet.id) + "\n" == last_tweet_id:
     print("Nothing to do")
 else:
-    tweet = (api.user_timeline(screen_name = userID, count = 1, tweet_mode = "extended", exclude_replies = True)[0])
     openLog = open(log, "a")
     openLog.write(str(tweet.id) + "\n")
     openLog.close()
