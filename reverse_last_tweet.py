@@ -1,4 +1,4 @@
-import os,tweepy,re
+import os,tweepy,re,sys
 from time import time,sleep
 from auth import *
 
@@ -6,6 +6,10 @@ auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token_key, access_token_secret)
 api = tweepy.API(auth)
 
+if api.verify_credentials() == False:
+    sys.exit("Authentication ERROR!")
+else:
+    print("Authentication OK!")
 
 tweet = api.user_timeline(screen_name = userID, count = 1, exclude_replies=True)[0]
 tweetLen = len(tweet.text)
