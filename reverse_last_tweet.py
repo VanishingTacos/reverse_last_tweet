@@ -26,11 +26,12 @@ with open(log, "rb") as f:
 if str(tweet.id) + "\n" == last_tweet_id:
     print("Nothing to do")
 else:
+    tweet = (api.user_timeline(screen_name = userID, count = 1, tweet_mode = "extended", exclude_replies = True)[0])
     openLog = open(log, "a")
     openLog.write(str(tweet.id) + "\n")
     openLog.close()
     tweetLen = len(tweet.full_text) # Caculate the tweets length
     removeURL = re.sub(r" http\S+", "", tweet.full_text) # Removes URL from the tweet if one is found 
     slicedTweet = removeURL[tweetLen::-1] # Reverses the tweet
-    tweet = (api.user_timeline(screen_name = userID, count = 1, tweet_mode = "extended", exclude_replies = True)[0])
+    api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
     print("Done")
