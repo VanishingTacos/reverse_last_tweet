@@ -13,7 +13,7 @@ if api.verify_credentials() == False:
 else:
     print("Authentication OK!")
 
-tweet = api.user_timeline(screen_name = userID, count = 1, exclude_replies=True)[0] # Pulls latest tweet from users timeline that is not a reply
+tweet = api.user_timeline(screen_name = userID, count = 1, exclude_replies=True, tweet_mode = "extended", include_rts = False)[0] # Pulls latest tweet from users timeline that is not a reply or a rt
 
 # Check log for the latest entry
 with open(log, "rb") as f:
