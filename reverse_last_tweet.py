@@ -4,8 +4,8 @@ import re
 import sys
 import urllib.request
 import ffmpeg
+from PIL import Image, ImageOps
 from auth import *
-
 
 # Authentication
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -16,7 +16,9 @@ api = tweepy.API(auth)
 if not api.verify_credentials():
     sys.exit("Authentication ERROR!")
 
+
 tweet = api.user_timeline(screen_name = userID, count = 1, exclude_replies=True, tweet_mode = "extended", include_rts = False)[0] # Pulls latest tweet from users timeline that is not a reply or rt
+
 
 # Check log for the latest entry
 with open(log, "rb") as f:
@@ -34,7 +36,7 @@ else:
     openLog.write(str(tweet.id) + "\n")
     openLog.close()
     tweetLen = len(tweet.full_text) # calculate the tweets length
-    removeURL = re.sub(r" http\S+", "", tweet.full_text) # Removes URL from the tweet if one is found 
+    removeURL = re.sub(r'http\S+', '',tweet.full_text) # Removes URL from the tweet if one is found
     slicedTweet = removeURL[tweetLen::-1] # Reverses the tweet
 
     # try to get video info. if none is found then skip
@@ -60,17 +62,34 @@ else:
 
     except:
         # check if tweet contains a url
-        if tweet.entities['urls'] != []:
+        if tweet.entities['urls']:
             for url in tweet.entities['urls']:
                 # if expanded_url is equal to twitch link then get tweet link and retweet
                 if url['expanded_url'] == "http://twitch.tv/" + twitch:
+                    liveLink = ("https://twitter.com/" + userID + "/statuses/" + str(tweet.id))
+                    api.update_status(slicedTweet + "\n\n" + liveLink )
+
+                elif url['expanded_url'] == "https://twitch.tv/" + twitch:
                     liveLink = ("https://twitter.com/" + userID + "/statuses/" + str(tweet.id))
                     api.update_status(slicedTweet + "\n\n" + liveLink )
                 else:
                     # else if tweet has link and is not a twitch link then just reply
                     api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
         else:
-            # else if no link in tweet then just reply
-            api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
+            try:
+                # check if tweet contains of image
+                if tweet.extended_entities["media"][0]["type"] == "photo":
+                    urllib.request.urlretrieve(tweet.extended_entities["media"][0]["media_url_https"], media + "image.jpg") # download image
+                    image = Image.open( media + "image.jpg") # open image
+                    image_mirror = ImageOps.mirror(image) # mirror image
+                    image_mirror.save(media + "mirror.jpg", quality=100) # save image
+                    upload = api.media_upload(media + "mirror.jpg", chunked = True, media_category = "tweet_image") # upload image
+                    api.update_status(slicedTweet, in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True, media_ids=[upload.media_id_string]) # post reply with image
+                else:
+                    # else if no photo in tweet then just reply
+                    api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
+            except:
+                # if no link or photo then just reply
+                api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
 
         print("Done")
