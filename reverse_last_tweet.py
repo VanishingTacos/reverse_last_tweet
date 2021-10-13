@@ -4,7 +4,6 @@ import re
 import sys
 import urllib.request
 import ffmpeg
-from PIL import Image, ImageOps
 from auth import *
 
 # Authentication
@@ -76,20 +75,6 @@ else:
                     # else if tweet has link and is not a twitch link then just reply
                     api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
         else:
-            try:
-                # check if tweet contains of image
-                if tweet.extended_entities["media"][0]["type"] == "photo":
-                    urllib.request.urlretrieve(tweet.extended_entities["media"][0]["media_url_https"], media + "image.jpg") # download image
-                    image = Image.open( media + "image.jpg") # open image
-                    image_mirror = ImageOps.mirror(image) # mirror image
-                    image_mirror.save(media + "mirror.jpg", quality=100) # save image
-                    upload = api.media_upload(media + "mirror.jpg", chunked = True, media_category = "tweet_image") # upload image
-                    api.update_status(slicedTweet, in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True, media_ids=[upload.media_id_string]) # post reply with image
-                else:
-                    # else if no photo in tweet then just reply
-                    api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
-            except:
-                # if no link or photo then just reply
-                api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
+            api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
 
         print("Done")
