@@ -71,6 +71,15 @@ else:
                 elif url['expanded_url'] == "https://twitch.tv/" + twitch:
                     liveLink = ("https://twitter.com/" + userID + "/statuses/" + str(tweet.id))
                     api.update_status(slicedTweet + "\n\n" + liveLink )
+
+                elif url['expanded_url'] == "http://Twitch.tv/" + twitch:
+                    liveLink = ("https://twitter.com/" + userID + "/statuses/" + str(tweet.id))
+                    api.update_status(slicedTweet + "\n\n" + liveLink )
+
+                elif url['expanded_url'] == "https://Twitch.tv/" + twitch:
+                    liveLink = ("https://twitter.com/" + userID + "/statuses/" + str(tweet.id))
+                    api.update_status(slicedTweet + "\n\n" + liveLink )
+                    
                 else:
                     # else if tweet has link and is not a twitch link then just reply
                     api.update_status(slicedTweet, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True) # reply to tweet
