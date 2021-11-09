@@ -48,10 +48,13 @@ else:
             in_file = ffmpeg.input(media + "video0.mp4") # input file for ffmpeg
             reversed_video = in_file.video.filter("reverse") # reverse video
             reversed_audio = in_file.audio.filter("areverse") # reverse audio
-            join = ffmpeg.concat(reversed_video,reversed_audio, v=1, a=1) # recombine video and audio
-            out = join.output(media + "out0.mp4") # out file
-            args = out.global_args('-loglevel', 'quiet') # shut up ffmpeg
-            args.run() # run ffmpeg
+            (
+                ffmpeg
+                .concat(reversed_video,reversed_audio, v=1, a=1) # concats reversed audio and video
+                .output('out0.mp4') # output file
+                .global_args('-loglevel' ,'quiet') # shut up ffmpeg
+                .run()
+            )
             upload = api.media_upload(media + "out0.mp4", chunked = True, media_category = "tweet_video") # upload video
             api.update_status(slicedTweet, in_reply_to_status_id = tweet.id, auto_populate_reply_metadata = True, media_ids=[upload.media_id_string]) # post reply with video
             # remove videos
