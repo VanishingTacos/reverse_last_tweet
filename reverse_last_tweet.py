@@ -53,7 +53,7 @@ else:
                 ffmpeg
                 .concat(reversed_video,reversed_audio, v=1, a=1) # concats reversed audio and video
                 .output(media + 'out0.mp4') # output file
-                .global_args('-loglevel' , 'quite') # shut up ffmpeg
+                .global_args('-loglevel' , 'quiet') # shut up ffmpeg
                 .run()
             )
             upload = api.media_upload(media + "out0.mp4", chunked = True, media_category = "tweet_video") # upload video
