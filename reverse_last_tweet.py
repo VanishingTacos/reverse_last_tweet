@@ -16,6 +16,8 @@ if not api.verify_credentials():
     sys.exit("Authentication ERROR!")
 
 
+
+
 tweet = api.user_timeline(screen_name = userID, count = 1, exclude_replies=True, tweet_mode = "extended", include_rts = False)[0] # Pulls latest tweet from users timeline that is not a reply or rt
 
 
@@ -40,10 +42,9 @@ else:
 
     # try to get video info. if none is found then skip
     try:
-        media_info = tweet.extended_entities["media"][0]["video_info"] # get media info
-        # if media is video then continue
-        if media_info["variants"][1]["content_type"] == "video/mp4":
-            video_link = media_info["variants"][1]["url"] # get video url
+        media_info = tweet.extended_entities["media"][0]["video_info"]
+        if media_info["variants"][0]["content_type"] == "video/mp4":
+            video_link = media_info["variants"][0]["url"] # get video url
             urllib.request.urlretrieve(video_link, media + "video0.mp4") # download video
             in_file = ffmpeg.input(media + "video0.mp4") # input file for ffmpeg
             reversed_video = in_file.video.filter("reverse") # reverse video
@@ -51,8 +52,8 @@ else:
             (
                 ffmpeg
                 .concat(reversed_video,reversed_audio, v=1, a=1) # concats reversed audio and video
-                .output('out0.mp4') # output file
-                .global_args('-loglevel' ,'quiet') # shut up ffmpeg
+                .output(media + 'out0.mp4') # output file
+                .global_args('-loglevel' , 'verbose') # shut up ffmpeg
                 .run()
             )
             upload = api.media_upload(media + "out0.mp4", chunked = True, media_category = "tweet_video") # upload video
@@ -60,7 +61,7 @@ else:
             # remove videos
             os.remove(media + "video0.mp4")
             os.remove(media + "out0.mp4")
-        print("Done")
+            print("Done")
 
     except:
         # check if tweet contains a url
