@@ -15,11 +15,7 @@ api = tweepy.API(auth)
 if not api.verify_credentials():
     sys.exit("Authentication ERROR!")
 
-
-
-
 tweet = api.user_timeline(screen_name = userID, count = 1, exclude_replies=True, tweet_mode = "extended", include_rts = False)[0] # Pulls latest tweet from users timeline that is not a reply or rt
-
 
 # Check log for the latest entry
 with open(log, "rb") as f:
@@ -68,19 +64,8 @@ else:
         if tweet.entities['urls']:
             for url in tweet.entities['urls']:
                 # if expanded_url is equal to twitch link then get tweet link and retweet
-                if url['expanded_url'] == "http://twitch.tv/" + twitch:
-                    liveLink = ("https://twitter.com/" + userID + "/statuses/" + str(tweet.id))
-                    api.update_status(slicedTweet + "\n\n" + liveLink )
+                if re.match(r'http\S+\/\/[Tt]witch.tv/samwitch', url['expanded_url']):
 
-                elif url['expanded_url'] == "https://twitch.tv/" + twitch:
-                    liveLink = ("https://twitter.com/" + userID + "/statuses/" + str(tweet.id))
-                    api.update_status(slicedTweet + "\n\n" + liveLink )
-
-                elif url['expanded_url'] == "http://Twitch.tv/" + twitch:
-                    liveLink = ("https://twitter.com/" + userID + "/statuses/" + str(tweet.id))
-                    api.update_status(slicedTweet + "\n\n" + liveLink )
-
-                elif url['expanded_url'] == "https://Twitch.tv/" + twitch:
                     liveLink = ("https://twitter.com/" + userID + "/statuses/" + str(tweet.id))
                     api.update_status(slicedTweet + "\n\n" + liveLink )
                     
