@@ -19,11 +19,9 @@ if not api.verify_credentials():
 tweet = api.user_timeline(screen_name = userID, count = 1, exclude_replies=True, tweet_mode = 'extended', include_rts = False)[0] # Pulls latest tweet from users timeline that is not a reply or rt
 
 # Check log for the latest entry
-with open(log, 'rb') as f:
-    f.seek(2, os.SEEK_END)
-    while f.read(1) != b'\n':
-        f.seek(-2, os.SEEK_CUR)
-    last_tweet_id = f.readline().decode()
+with open(log, 'r') as f:
+    last_tweet_id = f.readlines()[-1]
+    last_tweet_id = last_tweet_id.split('|')[0]
 
 # If latest current tweet ID matches latest log entry then do nothing, else post reversed tweet
 if str(tweet.id) + '\n' == last_tweet_id:
@@ -74,7 +72,7 @@ else:
             if tweet.entities['urls']:
                 for url in tweet.entities['urls']:
                     # if expanded_url is equal to twitch link then get tweet link and retweet
-                    if re.match(r'http\S+\/\/[Tt]witch.tv/samwitch', url['expanded_url']):
+                    if re.match(r'http\S+\/\/[Tt]witch.tv/' + twitch, url['expanded_url']):
 
                         liveLink = ('https://twitter.com/' + userID + '/statuses/' + str(tweet.id))
                         api.update_status(slicedTweet + '\n\n' + liveLink )
